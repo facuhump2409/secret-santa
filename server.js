@@ -15,39 +15,51 @@ app.use(express.static('public'));
 
 // Get all participants with their gifts and clues
 app.get('/api/participants', (req, res) => {
-  const query = `
-    SELECT 
-      p.id,
-      p.name,
-      GROUP_CONCAT(DISTINCT g.id || ':' || g.gift_description) as gifts,
-      GROUP_CONCAT(DISTINCT c.id || ':' || c.clue_text) as clues
-    FROM participants p
-    LEFT JOIN gifts g ON p.id = g.participant_id
-    LEFT JOIN clues c ON p.id = c.participant_id
-    GROUP BY p.id
-    ORDER BY p.name
-  `;
-
-  db.all(query, [], (err, rows) => {
+  // Get all participants
+  db.all('SELECT id, name FROM participants ORDER BY name', [], (err, participants) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    
-    // Parse the concatenated gifts and clues
-    const participants = rows.map(row => ({
-      id: row.id,
-      name: row.name,
-      gifts: row.gifts ? row.gifts.split(',').map(g => {
-        const [id, ...desc] = g.split(':');
-        return { id: parseInt(id), description: desc.join(':') };
-      }) : [],
-      clues: row.clues ? row.clues.split(',').map(c => {
-        const [id, ...text] = c.split(':');
-        return { id: parseInt(id), text: text.join(':') };
-      }) : []
-    }));
-    
-    res.json(participants);
+
+    let completed = 0;
+    const results = participants.map(p => ({ ...p, gifts: [], clues: [] }));
+
+    if (participants.length === 0) {
+      return res.json([]);
+    }
+
+    participants.forEach((participant, index) => {
+      // Get gifts for this participant
+      db.all('SELECT id, gift_description FROM gifts WHERE participant_id = ?', 
+        [participant.id], 
+        (err, gifts) => {
+          if (!err) {
+            results[index].gifts = gifts.map(g => ({ 
+              id: g.id, 
+              description: g.gift_description 
+            }));
+          }
+
+          // Get clues for this participant
+          db.all('SELECT id, clue_text FROM clues WHERE participant_id = ?', 
+            [participant.id], 
+            (err, clues) => {
+              if (!err) {
+                results[index].clues = clues.map(c => ({ 
+                  id: c.id, 
+                  text: c.clue_text 
+                }));
+              }
+
+              completed++;
+              if (completed === participants.length) {
+                res.json(results);
+              }
+            }
+          );
+        }
+      );
+    });
   });
 });
 

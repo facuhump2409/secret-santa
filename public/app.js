@@ -21,6 +21,16 @@ document.querySelectorAll('.close').forEach(closeBtn => {
         clueModal.style.display = 'none';
         resetModals();
     });
+    
+    // Add keyboard support for accessibility
+    closeBtn.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            giftModal.style.display = 'none';
+            clueModal.style.display = 'none';
+            resetModals();
+        }
+    });
 });
 
 // Close modal when clicking outside
@@ -112,7 +122,12 @@ function createParticipantCard(participant) {
 
 // Helper function to escape HTML
 function escapeHtml(text) {
-    return text.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
 }
 
 // Open add gift modal

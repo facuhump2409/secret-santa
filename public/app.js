@@ -14,6 +14,23 @@ let editingGiftId = null;
 // Initialize
 loadParticipants();
 
+// Event delegation for button clicks
+participantsContainer.addEventListener('click', (e) => {
+    const action = e.target.dataset.action;
+    
+    if (action === 'add-gift') {
+        openAddGiftModal(e.target.dataset.participantId);
+    } else if (action === 'edit-gift') {
+        editGift(e.target.dataset.giftId, e.target.dataset.participantId, e.target.dataset.description);
+    } else if (action === 'delete-gift') {
+        deleteGift(e.target.dataset.giftId);
+    } else if (action === 'add-clue') {
+        openAddClueModal(e.target.dataset.participantId);
+    } else if (action === 'delete-clue') {
+        deleteClue(e.target.dataset.clueId);
+    }
+});
+
 // Close modal functionality
 document.querySelectorAll('.close').forEach(closeBtn => {
     closeBtn.addEventListener('click', () => {
@@ -72,50 +89,121 @@ function createParticipantCard(participant) {
     const card = document.createElement('div');
     card.className = 'participant-card';
     
-    card.innerHTML = `
-        <div class="participant-header">
-            <h2 class="participant-name">${participant.name}</h2>
-        </div>
-        
-        <div class="gifts-section">
-            <div class="section-title">
-                <span>🎁 Wishlist</span>
-                <button class="btn btn-primary btn-small btn-add" onclick="openAddGiftModal(${participant.id})">Add Gift</button>
-            </div>
-            <ul class="gift-list" id="gifts-${participant.id}">
-                ${participant.gifts.length === 0 
-                    ? '<li class="empty-state">No gifts yet. Add something to your wishlist!</li>'
-                    : participant.gifts.map(gift => `
-                        <li class="gift-item">
-                            <span class="gift-text">${gift.description}</span>
-                            <div>
-                                <button class="btn btn-edit btn-small" onclick="editGift(${gift.id}, ${participant.id}, '${escapeHtml(gift.description)}')">Edit</button>
-                                <button class="btn btn-delete btn-small" onclick="deleteGift(${gift.id})">Delete</button>
-                            </div>
-                        </li>
-                    `).join('')
-                }
-            </ul>
-        </div>
-        
-        <div class="clues-section">
-            <div class="section-title">
-                <span>🔍 Secret Santa Clues</span>
-                <button class="btn btn-secondary btn-small btn-add" onclick="openAddClueModal(${participant.id})">Leave Clue</button>
-            </div>
-            <ul class="clue-list" id="clues-${participant.id}">
-                ${participant.clues.length === 0
-                    ? '<li class="empty-state">No clues yet. Your Secret Santa is mysterious!</li>'
-                    : participant.clues.map(clue => `
-                        <li class="clue-item">
-                            <span class="clue-text">${clue.text}</span>
-                            <button class="btn btn-delete btn-small" onclick="deleteClue(${clue.id})">Delete</button>
-                        </li>
-                    `).join('')
-                }
-            </ul>
-        </div>
-    `;
+    // Create header
+    const header = document.createElement('div');
+    header.className = 'participant-header';
+    header.innerHTML = `<h2 class="participant-name">${escapeHtml(participant.name)}</h2>`;
+    card.appendChild(header);
+    
+    // Create gifts section
+    const giftsSection = document.createElement('div');
+    giftsSection.className = 'gifts-section';
+    
+    const giftsTitleDiv = document.createElement('div');
+    giftsTitleDiv.className = 'section-title';
+    giftsTitleDiv.innerHTML = '<span>🎁 Wishlist</span>';
+    
+    const addGiftBtn = document.createElement('button');
+    addGiftBtn.className = 'btn btn-primary btn-small btn-add';
+    addGiftBtn.textContent = 'Add Gift';
+    addGiftBtn.dataset.action = 'add-gift';
+    addGiftBtn.dataset.participantId = participant.id;
+    giftsTitleDiv.appendChild(addGiftBtn);
+    giftsSection.appendChild(giftsTitleDiv);
+    
+    const giftsList = document.createElement('ul');
+    giftsList.className = 'gift-list';
+    giftsList.id = `gifts-${participant.id}`;
+    
+    if (participant.gifts.length === 0) {
+        const emptyItem = document.createElement('li');
+        emptyItem.className = 'empty-state';
+        emptyItem.textContent = 'No gifts yet. Add something to your wishlist!';
+        giftsList.appendChild(emptyItem);
+    } else {
+        participant.gifts.forEach(gift => {
+            const giftItem = document.createElement('li');
+            giftItem.className = 'gift-item';
+            
+            const giftText = document.createElement('span');
+            giftText.className = 'gift-text';
+            giftText.textContent = gift.description;
+            giftItem.appendChild(giftText);
+            
+            const buttonsDiv = document.createElement('div');
+            
+            const editBtn = document.createElement('button');
+            editBtn.className = 'btn btn-edit btn-small';
+            editBtn.textContent = 'Edit';
+            editBtn.dataset.action = 'edit-gift';
+            editBtn.dataset.giftId = gift.id;
+            editBtn.dataset.participantId = participant.id;
+            editBtn.dataset.description = gift.description;
+            buttonsDiv.appendChild(editBtn);
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'btn btn-delete btn-small';
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.dataset.action = 'delete-gift';
+            deleteBtn.dataset.giftId = gift.id;
+            buttonsDiv.appendChild(deleteBtn);
+            
+            giftItem.appendChild(buttonsDiv);
+            giftsList.appendChild(giftItem);
+        });
+    }
+    
+    giftsSection.appendChild(giftsList);
+    card.appendChild(giftsSection);
+    
+    // Create clues section
+    const cluesSection = document.createElement('div');
+    cluesSection.className = 'clues-section';
+    
+    const cluesTitleDiv = document.createElement('div');
+    cluesTitleDiv.className = 'section-title';
+    cluesTitleDiv.innerHTML = '<span>🔍 Secret Santa Clues</span>';
+    
+    const addClueBtn = document.createElement('button');
+    addClueBtn.className = 'btn btn-secondary btn-small btn-add';
+    addClueBtn.textContent = 'Leave Clue';
+    addClueBtn.dataset.action = 'add-clue';
+    addClueBtn.dataset.participantId = participant.id;
+    cluesTitleDiv.appendChild(addClueBtn);
+    cluesSection.appendChild(cluesTitleDiv);
+    
+    const cluesList = document.createElement('ul');
+    cluesList.className = 'clue-list';
+    cluesList.id = `clues-${participant.id}`;
+    
+    if (participant.clues.length === 0) {
+        const emptyItem = document.createElement('li');
+        emptyItem.className = 'empty-state';
+        emptyItem.textContent = 'No clues yet. Your Secret Santa is mysterious!';
+        cluesList.appendChild(emptyItem);
+    } else {
+        participant.clues.forEach(clue => {
+            const clueItem = document.createElement('li');
+            clueItem.className = 'clue-item';
+            
+            const clueText = document.createElement('span');
+            clueText.className = 'clue-text';
+            clueText.textContent = clue.text;
+            clueItem.appendChild(clueText);
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'btn btn-delete btn-small';
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.dataset.action = 'delete-clue';
+            deleteBtn.dataset.clueId = clue.id;
+            clueItem.appendChild(deleteBtn);
+            
+            cluesList.appendChild(clueItem);
+        });
+    }
+    
+    cluesSection.appendChild(cluesList);
+    card.appendChild(cluesSection);
     
     return card;
 }

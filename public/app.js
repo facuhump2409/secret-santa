@@ -3,6 +3,7 @@ const participantsContainer = document.getElementById('participants-container');
 const giftModal = document.getElementById('gift-modal');
 const clueModal = document.getElementById('clue-modal');
 const giftInput = document.getElementById('gift-input');
+const giftLinkInput = document.getElementById('gift-link-input');
 const clueInput = document.getElementById('clue-input');
 const addGiftBtn = document.getElementById('add-gift-btn');
 const addClueBtn = document.getElementById('add-clue-btn');
@@ -21,7 +22,7 @@ participantsContainer.addEventListener('click', (e) => {
     if (action === 'add-gift') {
         openAddGiftModal(e.target.dataset.participantId);
     } else if (action === 'edit-gift') {
-        editGift(e.target.dataset.giftId, e.target.dataset.participantId, e.target.dataset.description);
+        editGift(e.target.dataset.giftId, e.target.dataset.participantId, e.target.dataset.description, e.target.dataset.link);
     } else if (action === 'delete-gift') {
         deleteGift(e.target.dataset.giftId);
     } else if (action === 'add-clue') {
@@ -125,10 +126,27 @@ function createParticipantCard(participant) {
             const giftItem = document.createElement('li');
             giftItem.className = 'gift-item';
             
+            const giftContent = document.createElement('div');
+            giftContent.className = 'gift-content';
+            
             const giftText = document.createElement('span');
             giftText.className = 'gift-text';
             giftText.textContent = gift.description;
-            giftItem.appendChild(giftText);
+            giftContent.appendChild(giftText);
+            
+            // Add link if it exists
+            if (gift.link) {
+                const linkIcon = document.createElement('a');
+                linkIcon.href = gift.link;
+                linkIcon.target = '_blank';
+                linkIcon.rel = 'noopener noreferrer';
+                linkIcon.className = 'gift-link';
+                linkIcon.innerHTML = '🔗';
+                linkIcon.title = 'View gift link';
+                giftContent.appendChild(linkIcon);
+            }
+            
+            giftItem.appendChild(giftContent);
             
             const buttonsDiv = document.createElement('div');
             
@@ -139,6 +157,7 @@ function createParticipantCard(participant) {
             editBtn.dataset.giftId = gift.id;
             editBtn.dataset.participantId = participant.id;
             editBtn.dataset.description = gift.description;
+            editBtn.dataset.link = gift.link || '';
             buttonsDiv.appendChild(editBtn);
             
             const deleteBtn = document.createElement('button');
@@ -222,6 +241,7 @@ function escapeHtml(text) {
 function openAddGiftModal(participantId) {
     document.getElementById('modal-participant-id').value = participantId;
     giftInput.value = '';
+    giftLinkInput.value = '';
     editingGiftId = null;
     giftModal.style.display = 'block';
     giftInput.focus();
@@ -236,9 +256,10 @@ function openAddClueModal(participantId) {
 }
 
 // Edit gift
-function editGift(giftId, participantId, description) {
+function editGift(giftId, participantId, description, link) {
     document.getElementById('modal-participant-id').value = participantId;
     giftInput.value = description;
+    giftLinkInput.value = link || '';
     editingGiftId = giftId;
     giftModal.style.display = 'block';
     giftInput.focus();
@@ -247,6 +268,7 @@ function editGift(giftId, participantId, description) {
 // Reset modals
 function resetModals() {
     giftInput.value = '';
+    giftLinkInput.value = '';
     clueInput.value = '';
     editingGiftId = null;
 }
@@ -255,6 +277,7 @@ function resetModals() {
 addGiftBtn.addEventListener('click', async () => {
     const participantId = document.getElementById('modal-participant-id').value;
     const description = giftInput.value.trim();
+    const link = giftLinkInput.value.trim();
     
     if (!description) {
         alert('Please enter a gift description!');
@@ -267,14 +290,14 @@ addGiftBtn.addEventListener('click', async () => {
             await fetch(`/api/gifts/${editingGiftId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ description })
+                body: JSON.stringify({ description, link })
             });
         } else {
             // Add new gift
             await fetch(`/api/participants/${participantId}/gifts`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ description })
+                body: JSON.stringify({ description, link })
             });
         }
         

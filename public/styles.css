@@ -98,9 +98,27 @@ header h1 {
     font-style: italic;
 }
 
+.gift-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .gift-text, .clue-text {
     flex: 1;
     color: #333;
+}
+
+.gift-link {
+    font-size: 1.2em;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+    display: inline-block;
+}
+
+.gift-link:hover {
+    transform: scale(1.2);
 }
 
 .btn {
@@ -202,7 +220,7 @@ header h1 {
     color: #BB2528;
 }
 
-#gift-input, #clue-input {
+#gift-input, #gift-link-input, #clue-input {
     width: 100%;
     padding: 12px;
     margin-bottom: 15px;
@@ -211,13 +229,14 @@ header h1 {
     font-size: 1em;
     font-family: inherit;
 }
+}
 
 #clue-input {
     min-height: 100px;
     resize: vertical;
 }
 
-#gift-input:focus, #clue-input:focus {
+#gift-input:focus, #gift-link-input:focus, #clue-input:focus {
     outline: none;
     border-color: #165B33;
 }

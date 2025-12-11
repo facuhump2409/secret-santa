@@ -20,6 +20,7 @@ db.serialize(() => {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       participant_id INTEGER NOT NULL,
       gift_description TEXT NOT NULL,
+      gift_link TEXT,
       FOREIGN KEY (participant_id) REFERENCES participants(id) ON DELETE CASCADE
     )
   `);

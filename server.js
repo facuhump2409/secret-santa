@@ -29,13 +29,14 @@ app.get('/api/participants', (req, res) => {
 
     participants.forEach((participant, index) => {
       // Get gifts for this participant
-      db.all('SELECT id, gift_description FROM gifts WHERE participant_id = ?', 
+      db.all('SELECT id, gift_description, gift_link FROM gifts WHERE participant_id = ?', 
         [participant.id], 
         (err, gifts) => {
           if (!err) {
             results[index].gifts = gifts.map(g => ({ 
               id: g.id, 
-              description: g.gift_description 
+              description: g.gift_description,
+              link: g.gift_link 
             }));
           }
 
@@ -65,20 +66,20 @@ app.get('/api/participants', (req, res) => {
 // Add a gift to a participant's wishlist
 app.post('/api/participants/:id/gifts', (req, res) => {
   const { id } = req.params;
-  const { description } = req.body;
+  const { description, link } = req.body;
 
   if (!description) {
     return res.status(400).json({ error: 'Gift description is required' });
   }
 
   db.run(
-    'INSERT INTO gifts (participant_id, gift_description) VALUES (?, ?)',
-    [id, description],
+    'INSERT INTO gifts (participant_id, gift_description, gift_link) VALUES (?, ?, ?)',
+    [id, description, link || null],
     function(err) {
       if (err) {
         return res.status(500).json({ error: err.message });
       }
-      res.json({ id: this.lastID, participant_id: id, description });
+      res.json({ id: this.lastID, participant_id: id, description, link });
     }
   );
 });
@@ -86,15 +87,15 @@ app.post('/api/participants/:id/gifts', (req, res) => {
 // Update a gift
 app.put('/api/gifts/:id', (req, res) => {
   const { id } = req.params;
-  const { description } = req.body;
+  const { description, link } = req.body;
 
   if (!description) {
     return res.status(400).json({ error: 'Gift description is required' });
   }
 
   db.run(
-    'UPDATE gifts SET gift_description = ? WHERE id = ?',
-    [description, id],
+    'UPDATE gifts SET gift_description = ?, gift_link = ? WHERE id = ?',
+    [description, link || null, id],
     function(err) {
       if (err) {
         return res.status(500).json({ error: err.message });
@@ -102,7 +103,7 @@ app.put('/api/gifts/:id', (req, res) => {
       if (this.changes === 0) {
         return res.status(404).json({ error: 'Gift not found' });
       }
-      res.json({ id, description });
+      res.json({ id, description, link });
     }
   );
 });

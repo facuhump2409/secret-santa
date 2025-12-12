@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amigo Invisible 🎅</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎄 Amigo Invisible 🎅</h1>
+            <p class="subtitle">¡Administrá tu lista de deseos y descubrí pistas de tu Amigo Invisible!</p>
+        </header>
+
+        <main id="participants-container">
+            <!-- Participants will be loaded here dynamically -->
+        </main>
+    </div>
+
+    <!-- Modal for editing gifts -->
+    <div id="gift-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" role="button" aria-label="Cerrar modal" tabindex="0">&times;</span>
+            <h2>Agregar Regalo a la Lista</h2>
+            <input type="hidden" id="modal-participant-id">
+            <input type="text" id="gift-input" placeholder="Ingresá la descripción del regalo">
+            <input type="url" id="gift-link-input" placeholder="Ingresá el link del regalo (opcional)">
+            <button id="add-gift-btn" class="btn btn-primary">Agregar Regalo</button>
+        </div>
+    </div>
+
+    <!-- Modal for adding clues -->
+    <div id="clue-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" role="button" aria-label="Cerrar modal" tabindex="0">&times;</span>
+            <h2>Dejar una Pista</h2>
+            <input type="hidden" id="clue-participant-id">
+            <textarea id="clue-input" placeholder="Ingresá una pista misteriosa..."></textarea>
+            <button id="add-clue-btn" class="btn btn-secondary">Dejar Pista</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

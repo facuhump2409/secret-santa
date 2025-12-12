@@ -28,7 +28,7 @@ Crea un archivo `.env` en la raíz del proyecto:
 
 ```env
 SUPABASE_URL=https://coysqjkyyhuijwqebqmp.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNveXNxamt5eWh1aWp3cWVicW1wIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTU1NzEyNywiZXhwIjoyMDgxMTMzMTI3fQ.Q0bHCHPWKoe4dk9J17awDO6kqFB2v9m11eOTvCvKtY4
+SUPABASE_SERVICE_ROLE_KEY=AGREGAR_KEY
 ```
 
 #### Para Vercel:

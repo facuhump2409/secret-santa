@@ -71,7 +71,7 @@ async function loadParticipants() {
         renderParticipants();
     } catch (error) {
         console.error('Error loading participants:', error);
-        participantsContainer.innerHTML = '<p class="empty-state">Error loading participants. Please refresh the page.</p>';
+        participantsContainer.innerHTML = '<p class="empty-state">Error al cargar participantes. Por favor, refrescá la página.</p>';
     }
 }
 
@@ -102,11 +102,11 @@ function createParticipantCard(participant) {
     
     const giftsTitleDiv = document.createElement('div');
     giftsTitleDiv.className = 'section-title';
-    giftsTitleDiv.innerHTML = '<span>🎁 Wishlist</span>';
+    giftsTitleDiv.innerHTML = '<span>🎁 Lista de Deseos</span>';
     
     const addGiftBtn = document.createElement('button');
     addGiftBtn.className = 'btn btn-primary btn-small btn-add';
-    addGiftBtn.textContent = 'Add Gift';
+    addGiftBtn.textContent = 'Agregar Regalo';
     addGiftBtn.dataset.action = 'add-gift';
     addGiftBtn.dataset.participantId = participant.id;
     giftsTitleDiv.appendChild(addGiftBtn);
@@ -119,7 +119,7 @@ function createParticipantCard(participant) {
     if (participant.gifts.length === 0) {
         const emptyItem = document.createElement('li');
         emptyItem.className = 'empty-state';
-        emptyItem.textContent = 'No gifts yet. Add something to your wishlist!';
+        emptyItem.textContent = 'Todavía no hay regalos. ¡Agregá algo a tu lista de deseos!';
         giftsList.appendChild(emptyItem);
     } else {
         participant.gifts.forEach(gift => {
@@ -142,7 +142,7 @@ function createParticipantCard(participant) {
                 linkIcon.rel = 'noopener noreferrer';
                 linkIcon.className = 'gift-link';
                 linkIcon.innerHTML = '🔗';
-                linkIcon.title = 'View gift link';
+                linkIcon.title = 'Ver link del regalo';
                 giftContent.appendChild(linkIcon);
             }
             
@@ -152,7 +152,7 @@ function createParticipantCard(participant) {
             
             const editBtn = document.createElement('button');
             editBtn.className = 'btn btn-edit btn-small';
-            editBtn.textContent = 'Edit';
+            editBtn.textContent = 'Editar';
             editBtn.dataset.action = 'edit-gift';
             editBtn.dataset.giftId = gift.id;
             editBtn.dataset.participantId = participant.id;
@@ -162,7 +162,7 @@ function createParticipantCard(participant) {
             
             const deleteBtn = document.createElement('button');
             deleteBtn.className = 'btn btn-delete btn-small';
-            deleteBtn.textContent = 'Delete';
+            deleteBtn.textContent = 'Eliminar';
             deleteBtn.dataset.action = 'delete-gift';
             deleteBtn.dataset.giftId = gift.id;
             buttonsDiv.appendChild(deleteBtn);
@@ -181,11 +181,11 @@ function createParticipantCard(participant) {
     
     const cluesTitleDiv = document.createElement('div');
     cluesTitleDiv.className = 'section-title';
-    cluesTitleDiv.innerHTML = '<span>🔍 Secret Santa Clues</span>';
+    cluesTitleDiv.innerHTML = '<span>🔍 Pistas del Amigo Invisible</span>';
     
     const addClueBtn = document.createElement('button');
     addClueBtn.className = 'btn btn-secondary btn-small btn-add';
-    addClueBtn.textContent = 'Leave Clue';
+    addClueBtn.textContent = 'Dejar Pista';
     addClueBtn.dataset.action = 'add-clue';
     addClueBtn.dataset.participantId = participant.id;
     cluesTitleDiv.appendChild(addClueBtn);
@@ -198,7 +198,7 @@ function createParticipantCard(participant) {
     if (participant.clues.length === 0) {
         const emptyItem = document.createElement('li');
         emptyItem.className = 'empty-state';
-        emptyItem.textContent = 'No clues yet. Your Secret Santa is mysterious!';
+        emptyItem.textContent = 'Todavía no hay pistas. ¡Tu Amigo Invisible es misterioso!';
         cluesList.appendChild(emptyItem);
     } else {
         participant.clues.forEach(clue => {
@@ -212,7 +212,7 @@ function createParticipantCard(participant) {
             
             const deleteBtn = document.createElement('button');
             deleteBtn.className = 'btn btn-delete btn-small';
-            deleteBtn.textContent = 'Delete';
+            deleteBtn.textContent = 'Eliminar';
             deleteBtn.dataset.action = 'delete-clue';
             deleteBtn.dataset.clueId = clue.id;
             clueItem.appendChild(deleteBtn);
@@ -280,7 +280,7 @@ addGiftBtn.addEventListener('click', async () => {
     const link = giftLinkInput.value.trim();
     
     if (!description) {
-        alert('Please enter a gift description!');
+        alert('¡Por favor ingresá una descripción del regalo!');
         return;
     }
     
@@ -306,7 +306,7 @@ addGiftBtn.addEventListener('click', async () => {
         await loadParticipants();
     } catch (error) {
         console.error('Error saving gift:', error);
-        alert('Error saving gift. Please try again.');
+        alert('Error al guardar el regalo. Por favor intentá de nuevo.');
     }
 });
 
@@ -316,7 +316,7 @@ addClueBtn.addEventListener('click', async () => {
     const clue = clueInput.value.trim();
     
     if (!clue) {
-        alert('Please enter a clue!');
+        alert('¡Por favor ingresá una pista!');
         return;
     }
     
@@ -332,13 +332,13 @@ addClueBtn.addEventListener('click', async () => {
         await loadParticipants();
     } catch (error) {
         console.error('Error adding clue:', error);
-        alert('Error adding clue. Please try again.');
+        alert('Error al agregar la pista. Por favor intentá de nuevo.');
     }
 });
 
 // Delete gift
 async function deleteGift(giftId) {
-    if (!confirm('Are you sure you want to delete this gift?')) {
+    if (!confirm('¿Estás seguro de que querés eliminar este regalo?')) {
         return;
     }
     
@@ -347,13 +347,13 @@ async function deleteGift(giftId) {
         await loadParticipants();
     } catch (error) {
         console.error('Error deleting gift:', error);
-        alert('Error deleting gift. Please try again.');
+        alert('Error al eliminar el regalo. Por favor intentá de nuevo.');
     }
 }
 
 // Delete clue
 async function deleteClue(clueId) {
-    if (!confirm('Are you sure you want to delete this clue?')) {
+    if (!confirm('¿Estás seguro de que querés eliminar esta pista?')) {
         return;
     }
     
@@ -362,7 +362,7 @@ async function deleteClue(clueId) {
         await loadParticipants();
     } catch (error) {
         console.error('Error deleting clue:', error);
-        alert('Error deleting clue. Please try again.');
+        alert('Error al eliminar la pista. Por favor intentá de nuevo.');
     }
 }
 

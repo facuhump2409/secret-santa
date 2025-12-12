@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secret Santa 🎅</title>
+    <title>Amigo Invisible 🎅</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🎄 Secret Santa Gift Exchange 🎅</h1>
-            <p class="subtitle">Manage your wishlist and discover clues from your Secret Santa!</p>
+            <h1>🎄 Intercambio de Amigo Invisible 🎅</h1>
+            <p class="subtitle">¡Administrá tu lista de deseos y descubrí pistas de tu Amigo Invisible!</p>
         </header>
 
         <main id="participants-container">
@@ -21,23 +21,23 @@
     <!-- Modal for editing gifts -->
     <div id="gift-modal" class="modal">
         <div class="modal-content">
-            <span class="close" role="button" aria-label="Close modal" tabindex="0">&times;</span>
-            <h2>Add Gift to Wishlist</h2>
+            <span class="close" role="button" aria-label="Cerrar modal" tabindex="0">&times;</span>
+            <h2>Agregar Regalo a la Lista</h2>
             <input type="hidden" id="modal-participant-id">
-            <input type="text" id="gift-input" placeholder="Enter gift description">
-            <input type="url" id="gift-link-input" placeholder="Enter gift link (optional)">
-            <button id="add-gift-btn" class="btn btn-primary">Add Gift</button>
+            <input type="text" id="gift-input" placeholder="Ingresá la descripción del regalo">
+            <input type="url" id="gift-link-input" placeholder="Ingresá el link del regalo (opcional)">
+            <button id="add-gift-btn" class="btn btn-primary">Agregar Regalo</button>
         </div>
     </div>
 
     <!-- Modal for adding clues -->
     <div id="clue-modal" class="modal">
         <div class="modal-content">
-            <span class="close" role="button" aria-label="Close modal" tabindex="0">&times;</span>
-            <h2>Leave a Clue</h2>
+            <span class="close" role="button" aria-label="Cerrar modal" tabindex="0">&times;</span>
+            <h2>Dejar una Pista</h2>
             <input type="hidden" id="clue-participant-id">
-            <textarea id="clue-input" placeholder="Enter a mysterious clue..."></textarea>
-            <button id="add-clue-btn" class="btn btn-secondary">Leave Clue</button>
+            <textarea id="clue-input" placeholder="Ingresá una pista misteriosa..."></textarea>
+            <button id="add-clue-btn" class="btn btn-secondary">Dejar Pista</button>
         </div>
     </div>
 

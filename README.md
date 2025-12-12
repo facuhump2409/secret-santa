@@ -1,72 +1,72 @@
-# 🎅 Secret Santa Gift Exchange
+# 🎅 Intercambio de Amigo Invisible
 
-A festive web application for managing Secret Santa gift exchanges! Participants can create and manage their wishlists, and Secret Santas can leave mysterious clues about their identity.
+¡Una aplicación web festiva para administrar intercambios de Amigo Invisible! Los participantes pueden crear y administrar sus listas de deseos, y los Amigos Invisibles pueden dejar pistas misteriosas sobre su identidad.
 
-## Features
+## Características
 
-- 🎁 **Wishlist Management**: Participants can add, edit, and delete gifts they want to receive
-- 🔍 **Secret Santa Clues**: Secret Santas can leave clues about their identity
-- 🎄 **Christmas Theme**: Beautiful red, green, and white color scheme
-- 💾 **Persistent Storage**: All data is stored in a SQLite database
-- 👥 **Multiple Participants**: Pre-loaded with 5 participants (Emma Wilson, James Anderson, Sophia Martinez, Oliver Johnson, Isabella Brown)
+- 🎁 **Administración de Lista de Deseos**: Los participantes pueden agregar, editar y eliminar regalos que quieren recibir
+- 🔍 **Pistas del Amigo Invisible**: Los Amigos Invisibles pueden dejar pistas sobre su identidad
+- 🎄 **Tema Navideño**: Hermoso esquema de colores rojo, verde y blanco
+- 💾 **Almacenamiento Persistente**: Todos los datos se guardan en una base de datos SQLite
+- 👥 **Múltiples Participantes**: Precargado con 5 participantes (Emma Wilson, James Anderson, Sophia Martinez, Oliver Johnson, Isabella Brown)
 
-## Installation
+## Instalación
 
-1. Clone this repository
-2. Install dependencies:
+1. Cloná este repositorio
+2. Instalá las dependencias:
    ```bash
    npm install
    ```
 
-## Usage
+## Uso
 
-1. Start the server:
+1. Iniciá el servidor:
    ```bash
    npm start
    ```
 
-2. Open your browser and navigate to:
+2. Abrí tu navegador y navegá a:
    ```
    http://localhost:3000
    ```
 
-3. Start managing wishlists and leaving clues!
+3. ¡Empezá a administrar listas de deseos y dejar pistas!
 
-## Technology Stack
+## Stack Tecnológico
 
-- **Backend**: Node.js with Express
-- **Database**: SQLite3
+- **Backend**: Node.js con Express
+- **Base de Datos**: SQLite3
 - **Frontend**: Vanilla JavaScript, HTML5, CSS3
-- **Styling**: Custom CSS with Christmas colors
+- **Estilos**: CSS personalizado con colores navideños
 
-## Database Schema
+## Esquema de Base de Datos
 
-### Tables
+### Tablas
 
-1. **participants**: Stores participant information
+1. **participants**: Almacena información de los participantes
    - id (PRIMARY KEY)
    - name
 
-2. **gifts**: Stores wishlist items
+2. **gifts**: Almacena items de la lista de deseos
    - id (PRIMARY KEY)
    - participant_id (FOREIGN KEY)
    - gift_description
 
-3. **clues**: Stores Secret Santa clues
+3. **clues**: Almacena pistas del Amigo Invisible
    - id (PRIMARY KEY)
    - participant_id (FOREIGN KEY)
    - clue_text
    - created_at
 
-## API Endpoints
+## Endpoints de la API
 
-- `GET /api/participants` - Get all participants with their gifts and clues
-- `POST /api/participants/:id/gifts` - Add a gift to a participant's wishlist
-- `PUT /api/gifts/:id` - Update a gift
-- `DELETE /api/gifts/:id` - Delete a gift
-- `POST /api/participants/:id/clues` - Add a clue for a participant
-- `DELETE /api/clues/:id` - Delete a clue
+- `GET /api/participants` - Obtener todos los participantes con sus regalos y pistas
+- `POST /api/participants/:id/gifts` - Agregar un regalo a la lista de deseos de un participante
+- `PUT /api/gifts/:id` - Actualizar un regalo
+- `DELETE /api/gifts/:id` - Eliminar un regalo
+- `POST /api/participants/:id/clues` - Agregar una pista para un participante
+- `DELETE /api/clues/:id` - Eliminar una pista
 
-## License
+## Licencia
 
 ISC

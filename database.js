@@ -37,7 +37,10 @@ db.serialize(() => {
   `);
 
   // Seed with 5 random participant names
-  const names = ['Emma Wilson', 'James Anderson', 'Sophia Martinez', 'Oliver Johnson', 'Isabella Brown'];
+  const names = ['JuanFran', 'JuanMar', 'Karina', 'Jorge', 'Juani', 'Kazu', 
+    'Abuela', 'Judit', 'Andres', 'Santiago', 'Facundo', 'Catalina', 'Lucas',
+    'Iara'
+  ];
   
   const stmt = db.prepare('INSERT OR IGNORE INTO participants (name) VALUES (?)');
   names.forEach(name => {

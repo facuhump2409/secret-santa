@@ -69,7 +69,7 @@ app.post('/api/participants/:id/gifts', (req, res) => {
   const { description, link } = req.body;
 
   if (!description) {
-    return res.status(400).json({ error: 'Gift description is required' });
+    return res.status(400).json({ error: 'La descripción del regalo es requerida' });
   }
 
   db.run(
@@ -90,7 +90,7 @@ app.put('/api/gifts/:id', (req, res) => {
   const { description, link } = req.body;
 
   if (!description) {
-    return res.status(400).json({ error: 'Gift description is required' });
+    return res.status(400).json({ error: 'La descripción del regalo es requerida' });
   }
 
   db.run(
@@ -101,7 +101,7 @@ app.put('/api/gifts/:id', (req, res) => {
         return res.status(500).json({ error: err.message });
       }
       if (this.changes === 0) {
-        return res.status(404).json({ error: 'Gift not found' });
+        return res.status(404).json({ error: 'Regalo no encontrado' });
       }
       res.json({ id, description, link });
     }
@@ -119,7 +119,7 @@ app.delete('/api/gifts/:id', (req, res) => {
     if (this.changes === 0) {
       return res.status(404).json({ error: 'Gift not found' });
     }
-    res.json({ message: 'Gift deleted successfully' });
+      res.json({ message: 'Regalo eliminado exitosamente' });
   });
 });
 
@@ -129,7 +129,7 @@ app.post('/api/participants/:id/clues', (req, res) => {
   const { clue } = req.body;
 
   if (!clue) {
-    return res.status(400).json({ error: 'Clue text is required' });
+    return res.status(400).json({ error: 'El texto de la pista es requerido' });
   }
 
   db.run(
@@ -152,14 +152,14 @@ app.delete('/api/clues/:id', (req, res) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    if (this.changes === 0) {
-      return res.status(404).json({ error: 'Clue not found' });
-    }
-    res.json({ message: 'Clue deleted successfully' });
+      if (this.changes === 0) {
+        return res.status(404).json({ error: 'Pista no encontrada' });
+      }
+      res.json({ message: 'Pista eliminada exitosamente' });
   });
 });
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`Secret Santa server running on http://localhost:${PORT}`);
+  console.log(`Servidor de Amigo Invisible corriendo en http://localhost:${PORT}`);
 });

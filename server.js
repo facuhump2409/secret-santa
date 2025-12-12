@@ -1,3 +1,6 @@
+// Load environment variables from .env file
+require('dotenv').config();
+
 const express = require('express');
 const path = require('path');
 const db = require('./database');
@@ -13,153 +16,124 @@ app.use(express.static('public'));
 // API Routes
 
 // Get all participants with their gifts and clues
-app.get('/api/participants', (req, res) => {
-  // Get all participants
-  db.all('SELECT id, name FROM participants ORDER BY name', [], (err, participants) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-
-    let completed = 0;
-    const results = participants.map(p => ({ ...p, gifts: [], clues: [] }));
-
+app.get('/api/participants', async (req, res) => {
+  try {
+    const participants = await db.getAllParticipants();
+    
     if (participants.length === 0) {
       return res.json([]);
     }
 
-    participants.forEach((participant, index) => {
-      // Get gifts for this participant
-      db.all('SELECT id, gift_description, gift_link FROM gifts WHERE participant_id = ?', 
-        [participant.id], 
-        (err, gifts) => {
-          if (!err) {
-            results[index].gifts = gifts.map(g => ({ 
-              id: g.id, 
-              description: g.gift_description,
-              link: g.gift_link 
-            }));
-          }
+    // Get gifts and clues for each participant
+    const results = await Promise.all(
+      participants.map(async (participant) => {
+        const [gifts, clues] = await Promise.all([
+          db.getGiftsByParticipantId(participant.id),
+          db.getCluesByParticipantId(participant.id)
+        ]);
 
-          // Get clues for this participant
-          db.all('SELECT id, clue_text FROM clues WHERE participant_id = ?', 
-            [participant.id], 
-            (err, clues) => {
-              if (!err) {
-                results[index].clues = clues.map(c => ({ 
-                  id: c.id, 
-                  text: c.clue_text 
-                }));
-              }
+        return {
+          ...participant,
+          gifts,
+          clues
+        };
+      })
+    );
 
-              completed++;
-              if (completed === participants.length) {
-                res.json(results);
-              }
-            }
-          );
-        }
-      );
-    });
-  });
+    res.json(results);
+  } catch (error) {
+    console.error('Error loading participants:', error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Add a gift to a participant's wishlist
-app.post('/api/participants/:id/gifts', (req, res) => {
-  const { id } = req.params;
-  const { description, link } = req.body;
+app.post('/api/participants/:id/gifts', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { description, link } = req.body;
 
-  if (!description) {
-    return res.status(400).json({ error: 'La descripción del regalo es requerida' });
-  }
-
-  db.run(
-    'INSERT INTO gifts (participant_id, gift_description, gift_link) VALUES (?, ?, ?)',
-    [id, description, link || null],
-    function(err) {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      res.json({ id: this.lastID, participant_id: id, description, link });
+    if (!description) {
+      return res.status(400).json({ error: 'La descripción del regalo es requerida' });
     }
-  );
+
+    const gift = await db.addGift(id, description, link);
+    res.json(gift);
+  } catch (error) {
+    console.error('Error adding gift:', error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Update a gift
-app.put('/api/gifts/:id', (req, res) => {
-  const { id } = req.params;
-  const { description, link } = req.body;
+app.put('/api/gifts/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { description, link } = req.body;
 
-  if (!description) {
-    return res.status(400).json({ error: 'La descripción del regalo es requerida' });
-  }
-
-  db.run(
-    'UPDATE gifts SET gift_description = ?, gift_link = ? WHERE id = ?',
-    [description, link || null, id],
-    function(err) {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      if (this.changes === 0) {
-        return res.status(404).json({ error: 'Regalo no encontrado' });
-      }
-      res.json({ id, description, link });
+    if (!description) {
+      return res.status(400).json({ error: 'La descripción del regalo es requerida' });
     }
-  );
+
+    const gift = await db.updateGift(id, description, link);
+    res.json(gift);
+  } catch (error) {
+    console.error('Error updating gift:', error);
+    if (error.statusCode === 404) {
+      return res.status(404).json({ error: 'Regalo no encontrado' });
+    }
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Delete a gift
-app.delete('/api/gifts/:id', (req, res) => {
-  const { id } = req.params;
-
-  db.run('DELETE FROM gifts WHERE id = ?', [id], function(err) {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    if (this.changes === 0) {
-      return res.status(404).json({ error: 'Gift not found' });
-    }
-      res.json({ message: 'Regalo eliminado exitosamente' });
-  });
+app.delete('/api/gifts/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await db.deleteGift(id);
+    res.json({ message: 'Regalo eliminado exitosamente' });
+  } catch (error) {
+    console.error('Error deleting gift:', error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Add a clue for a participant
-app.post('/api/participants/:id/clues', (req, res) => {
-  const { id } = req.params;
-  const { clue } = req.body;
+app.post('/api/participants/:id/clues', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { clue } = req.body;
 
-  if (!clue) {
-    return res.status(400).json({ error: 'El texto de la pista es requerido' });
-  }
-
-  db.run(
-    'INSERT INTO clues (participant_id, clue_text) VALUES (?, ?)',
-    [id, clue],
-    function(err) {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      res.json({ id: this.lastID, participant_id: id, clue });
+    if (!clue) {
+      return res.status(400).json({ error: 'El texto de la pista es requerido' });
     }
-  );
+
+    const result = await db.addClue(id, clue);
+    res.json(result);
+  } catch (error) {
+    console.error('Error adding clue:', error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Delete a clue
-app.delete('/api/clues/:id', (req, res) => {
-  const { id } = req.params;
+app.delete('/api/clues/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await db.deleteClue(id);
+    res.json({ message: 'Pista eliminada exitosamente' });
+  } catch (error) {
+    console.error('Error deleting clue:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
-  db.run('DELETE FROM clues WHERE id = ?', [id], function(err) {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-      if (this.changes === 0) {
-        return res.status(404).json({ error: 'Pista no encontrada' });
-      }
-      res.json({ message: 'Pista eliminada exitosamente' });
+// Export app for Vercel serverless functions
+module.exports = app;
+
+// Start server for local development
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Servidor de Amigo Invisible corriendo en http://localhost:${PORT}`);
   });
-});
-
-// Start server
-app.listen(PORT, () => {
-  console.log(`Servidor de Amigo Invisible corriendo en http://localhost:${PORT}`);
-});
+}
